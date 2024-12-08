@@ -24,3 +24,15 @@ To create a leaderboard we will do this:
 - const moneyLB = new CustomScoreboard("Money").leaderboard(15);
 Now that we defined out leaderboard, we will now grab each value/name and loop it and create our leaderboard.
 - moneyLB.forEach((entry, index) => { console.warn(`§e[Leaderboard] §7${index + 1}. ${entry.name}: ${entry.score}`); })
+
+**How to grab everyone's name on a scoreboard?**
+To grab everyone's name on a scoreboard. It's very easy! Do this:
+- const names = new CustomScoreboard("Money").listPlayers();
+Make sure it's at the top of your file for best use!
+- console.warn(names)
+
+**How to grab the total value/scores on that scoreboard?**
+Very easy, make sure to define this at the top of your file for best use!
+- const totalScore = new CustomScoreboard("Money").total();
+Let's display it:
+- console.warn(`Total Money: ${totalScore}`);
