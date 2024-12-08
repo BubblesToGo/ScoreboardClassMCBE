@@ -1,4 +1,4 @@
-import { system, world, DisplaySlotId } from "@minecraft/server";
+import { system, world, DisplaySlotId, Player } from "@minecraft/server";
 /**
  * @param {world} world
  */
@@ -10,7 +10,7 @@ class CustomScoreboard {
     }
     /**
      * Clear's the current objective at the specified display slot.
-     * @param {DisplaySlotId} displayArea - Example: DisplaySlotId.sidebar, DisplaySlotId.list
+     * @param {DisplaySlotId} displayArea - Example: "Sidebar", "List", "BelowName"
      * @returns {Promise<void>}
      */
     clearObjOnDisplay(displayArea) {
@@ -23,7 +23,7 @@ class CustomScoreboard {
     }
     /**
      * Set's the objective at the specified display slot.
-     * @param {DisplaySlotId} displayArea - Example: DisplaySlotId.sidebar, DisplaySlotId.list
+     * @param {DisplaySlotId} displayArea - Example: "Sidebar", "List", "BelowName"
      * @returns {Promise<void>}
      */
     setObjOnDisplay(displayArea) {
@@ -32,7 +32,7 @@ class CustomScoreboard {
             this.scoreboard.setObjectiveAtDisplaySlot(displayArea, { objective: this.objective });
         }
         catch (error) {
-            console.warn(`ERROR: ${error} --- The display slot name is incrorect. or The objective does not exist.`);
+            console.warn(`The display slot name is incrorect. or The objective does not exist.`);
         }
     }
     /**
@@ -60,7 +60,7 @@ class CustomScoreboard {
     }
     /**
      * Adds the specified score to the specified player's scoreboard.
-     * @param {any} player - The player 
+     * @param {Player} player - The player 
      * @param {number} score - The score to be added
      */
     addScore(player, score) {
@@ -73,7 +73,7 @@ class CustomScoreboard {
     }
     /**
      * Removes the specified score from the specified player's scoreboard.
-     * @param {any} player - The player
+     * @param {Player} player - The player
      * @param {number} score - The score to be removed. 
      */
     removeScore(player, score) {
@@ -86,7 +86,7 @@ class CustomScoreboard {
     }
     /**
      * Sets the specified score to the specified player's scoreboard.
-     * @param {any} player - The player
+     * @param {Player} player - The player
      * @param {number} score - The score to be set to
      */
     setScore(player, score) {
@@ -99,7 +99,7 @@ class CustomScoreboard {
     }
     /**
      * Gets the specified player's score from the scoreboard.
-     * @param {any} player - The player
+     * @param {Player} player - The player
      * @returns {number} The score, or 0 if the player does not exist or the objective does not exist.
      */
     getScore(player) {
