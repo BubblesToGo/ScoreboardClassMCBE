@@ -27,7 +27,7 @@ To create these put this variable at the top of your file:
 ## **Creating a getScoreOffline**
 To create this put this variable at the top of your file:
 ```js
-- const getScoreOffline = (playerName) => { new CustomScoreboard("Money").getScoreOffline(playerName); }
+- const getScoreOffline = (playerName) => new CustomScoreboard("Money").getScoreOffline(`${playerName}`)
 ```
 
 # **How to create a leaderboard?**
