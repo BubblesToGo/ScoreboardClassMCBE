@@ -2,9 +2,12 @@
 
 Manage your scoreboards for your MCBE Realm/BDS Server with ease. This class comes with some extra features including grabbing the player data while are offline and making leaderboards and more easier!
 
-#- Keep in mind their will most likely bee bugs that need to be fixed and if you find any message bubblestogo_ on discord!
+Keep in mind their will most likely bee bugs that need to be fixed and if you find any message bubblestogo_ on discord!
 
-## How to use
+## How to make/use complex systems
+**How to use any of the functions?**
+To use any of the functions, the examples for complex will be below BUT, to understand how it's working it's like this:
+- new CustomScoreboard("PUT THE SCOREBOARD NAME").THEFUNCTIONYOUWANTTOUSE
 
 **How to remake or make getScore, addScore, setScore, removeScore, getScoreOffline**
 
