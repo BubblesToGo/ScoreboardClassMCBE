@@ -30,7 +30,7 @@ To create this put this variable at the top of your file:
 - const getScoreOffline = (playerName) => { new CustomScoreboard("Money").getScoreOffline(playerName); }
 ```
 
-## **How to create a leaderboard?**
+# **How to create a leaderboard?**
 To create a leaderboard we will do this:
 ```js
 - const moneyLB = new CustomScoreboard("Money").leaderboard(15);
@@ -40,7 +40,7 @@ Now that we defined out leaderboard, we will now grab each value/name and loop i
 - moneyLB.forEach((entry, index) => { console.warn(`§e[Leaderboard] §7${index + 1}. ${entry.name}: ${entry.score}`); })
 ```
 
-## **How to grab everyone's name on a scoreboard?**
+# **How to grab everyone's name on a scoreboard?**
 To grab everyone's name on a scoreboard. It's very easy! Do this:
 ```js
 - const names = new CustomScoreboard("Money").listPlayers();
@@ -50,7 +50,7 @@ Make sure it's at the top of your file for best use!
 - console.warn(names)
 ```
 
-## **How to grab the total value/scores on that scoreboard?**
+# **How to grab the total value/scores on that scoreboard?**
 Very easy, make sure to define this at the top of your file for best use!
 ```js
 - const totalScore = new CustomScoreboard("Money").total();
