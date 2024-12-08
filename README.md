@@ -36,6 +36,10 @@ Make sure it's at the top of your file for best use!
 
 **How to grab the total value/scores on that scoreboard?**
 Very easy, make sure to define this at the top of your file for best use!
+```js
 - const totalScore = new CustomScoreboard("Money").total();
+```
 Let's display it:
+```js
 - console.warn(`Total Money: ${totalScore}`);
+```
