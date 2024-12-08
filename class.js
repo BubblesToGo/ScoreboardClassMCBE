@@ -78,7 +78,7 @@ class CustomScoreboard {
      */
     removeScore(player, score) {
         try {
-            this.objective.setScore(player, score - world.scoreboard.getObjective(this.objectiveName).getScore(player));
+            this.objective.setScore(player, world.scoreboard.getObjective(this.objectiveName).getScore(player) - score);
         }
         catch {
             console.warn(`${player} does not exist. Or the amount is not a allowed integer. Or the objective does not exist.`);
@@ -106,7 +106,7 @@ class CustomScoreboard {
         try {
             return this.objective.getScore(player);
         } catch {
-            return useZero ? 0 : NaN;
+            return 0
         }
     }
     /**
