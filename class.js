@@ -78,7 +78,7 @@ class CustomScoreboard {
      */
     removeScore(player, score) {
         try {
-            this.objective.setScore(player, world.scoreboard.getObjective(this.objectiveName).getScore(player) - score);
+            this.objective.setScore(player, this.getScore(player) - score);
         }
         catch {
             console.warn(`${player} does not exist. Or the amount is not a allowed integer. Or the objective does not exist.`);
@@ -118,7 +118,7 @@ class CustomScoreboard {
             let sc = 0;
             this.objective.getScores().forEach(scores => sc = sc + scores.score);
             return sc;
-            
+
         }
         catch {
             console.warn(`No values found. Or the objective does not exist.`);
@@ -134,27 +134,51 @@ class CustomScoreboard {
             console.warn(`Objective ${this.objectiveName} does not exist.`);
             return null;
         }
-        let score;
-        world.getDynamicPropertyIds()
-        .filter(id => id.startsWith('Name:'))
-        .forEach(id => {
-            const playerId = id.split(':')[1];
-            const identityJson = id.substring(id.indexOf('{'));
+        //    world.setDynamicProperty(`Name:${player.id}:${JSON.stringify(player.scoreboardIdentity)}`, player.name);
+
+        const dynamicIds = Object.keys(world.getDynamicPropertyIds());
+
+        const foundEntry = dynamicIds.filter((entry => entry.startsWith("Name:"))).find((entry) => {
+            const id = entry.split(":")[1];
+
+            const identityStart = id.indexOf("{");
+            if (identityStart === -1) return false;
+
             let identity;
-            try { const parsedIdentity = JSON.parse(identityJson); identity = parsedIdentity.id; } catch {}
-            const name = world.getDynamicProperty(`Name:${playerId}:{"id":${identity}}`); 
-            this.objective.getScores().forEach(scores => {
-                if (name == plrName && identity == scores.participant.id) {
-                    try {
-                        score = scores.score;
-                    }
-                    catch {
-                        score = 0;
-                    }
-                }
-            });
-        });
-        return score;
+            try {
+                const identityJSON = id.substring(identityStart);
+                const parsedIdentity = JSON.parse(identityJSON)
+                identity = parsedIdentity.id
+            } catch {
+                return false
+            }
+
+            const playerName = world.getDynamicProperty(`Name:${id}:{"id":${identity}}`);
+
+            const data = this.objective.getScores().find((scoreEntry) => {
+                scoreEntry.participant.id === id && playerName === plrName
+            })
+
+            return !!data //Just Boolean() but a better shortcut
+        })
+
+        let score = 0;
+        if (foundEntry) {
+            const id = foundEntry.split(":")[1];
+            const identityJSON = id.substring(id.indexOf("{"));
+            const parsedIdentity = JSON.parse(identityJSON);
+            const identity = parsedIdentity.id;
+
+            const playerName = world.getDynamicProperty(`Name:${id}:{"id":${identity}}`);
+
+            const data = this.objective.getScores().find((scoreEntry) => {
+                scoreEntry.participant.id === id && playerName === plrName
+            })
+
+            if (data) score = data.score
+        }
+
+        return score
     }
     /**
      * 
@@ -163,20 +187,36 @@ class CustomScoreboard {
      */
     listPlayers() {
         const names = [];
-        world.getDynamicPropertyIds()
-        .filter(id => id.startsWith('Name:'))
-        .forEach(id => {
-            const playerId = id.split(':')[1];
-            const identityJson = id.substring(id.indexOf('{'));
+
+        const dynamicIds = world.getDynamicPropertyIds();
+        const scoreParticipantIds = new Set(
+            this.objective.getScores().map(score => score.participant.id)
+        );
+
+        for (const id of dynamicIds) {
+            if (!id.startsWith('Name:')) continue;
+    
+            const identityStart = id.indexOf('{');
+            if (identityStart === -1) continue;
+    
             let identity;
-            try { const parsedIdentity = JSON.parse(identityJson); identity = parsedIdentity.id; } catch {}
-             this.objective.getScores().forEach(name => {
-                if (identity == name.participant.id) {
-                    names.push({ name: world.getDynamicProperty(`Name:${playerId}:{"id":${identity}}`)});
-                }
-             });
-        });
-        return names.map(name => name.name);
+            try {
+                const identityJson = id.substring(identityStart);
+                const parsedIdentity = JSON.parse(identityJson);
+                identity = parsedIdentity.id;
+            } catch {
+                continue;
+            }
+    
+            if (!scoreParticipantIds.has(identity)) continue;
+    
+            const playerName = world.getDynamicProperty(id);
+            if (playerName) {
+                names.push(playerName);
+            }
+        }
+
+        return names
     }
     /**
      * 
@@ -185,19 +225,39 @@ class CustomScoreboard {
      */
     grabEveryValueAndName() {
         const results = [];
-        world.getDynamicPropertyIds()
-        .filter(id => id.startsWith('Name:'))
-        .forEach(id => {
-            const playerId = id.split(':')[1];
-            const identityJson = id.substring(id.indexOf('{'));
+        const dynamicIds = world.getDynamicPropertyIds();
+
+        //Preprocess scores into a Map for fast lookup
+        const scoreMap = new Map();
+        for (const scoreEntry of this.objective.getScores()) {
+            scoreMap.set(scoreEntry.participant.id, scoreEntry.score)
+        }
+
+        for (const id of dynamicIds) {
+            if (!id.startsWith("Name:")) continue;
+
+            const parts = id.split(":");
+            if (parts.length < 2) continue;
+
+            const identityStart = id.indexOf("{");
+            if (identityStart === -1) continue;
+
             let identity;
-            try { const parsedIdentity = JSON.parse(identityJson); identity = parsedIdentity.id; } catch {}
-             this.objective.getScores().forEach(scores => {
-                if (identity == scores.participant.id) {
-                    results.push({ name: world.getDynamicProperty(`Name:${playerId}:{"id":${identity}}`), score: scores.score  });
-                }
-             });
-        });
+            try {
+                const identityJSON = id.substring(identityStart);
+                const parsedIdentity = JSON.parse(identityJSON);
+                identity = parsedIdentity.id;
+            } catch {
+                continue;
+            }
+
+            const score = scoreMap.get(identity);
+            if (score === undefined) continue;
+
+            const playerName = world.getDynamicProperty(id);
+            results.push({ name: playerName, score })
+        }
+
         return results;
     }
     /**
@@ -219,6 +279,7 @@ class CustomScoreboard {
     }
 }
 export { CustomScoreboard };
+
 system.runInterval(() => {
     for (const player of world.getAllPlayers()) {
         const joined = world.getDynamicProperty(`Name:${player.id}:${player.scoreboardIdentity}`);
